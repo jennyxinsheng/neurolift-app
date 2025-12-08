@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, StatusBar, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { AppNavigationProp } from '../navigation/types';
@@ -104,11 +104,12 @@ export default function ProfileScreen() {
 
   return (
     <Screen backgroundColor={COLORS.gray100}>
-      <SafeAreaView style={styles.container} edges={['top']}>
+      <SafeAreaView style={styles.container} edges={[]}>
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          contentInsetAdjustmentBehavior="never"
         >
           {/* Profile Info */}
           <Card variant="elevated" style={styles.profileCard}>
@@ -246,8 +247,6 @@ export default function ProfileScreen() {
               variant="ghost"
             />
           </View>
-
-          <Spacer size={SPACING.xxl} />
         </ScrollView>
       </SafeAreaView>
     </Screen>
@@ -280,11 +279,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    // No additional padding needed, SafeAreaView handles it
+    paddingTop: 0,
+    paddingBottom: 0,
   },
   profileCard: {
     marginHorizontal: SPACING.md,
-    marginBottom: SPACING.md,
+    marginTop: Platform.OS === 'ios' ? 44 : StatusBar.currentHeight || 0,
+    marginBottom: SPACING.sm,
   },
   profileHeader: {
     alignItems: 'center',
@@ -329,14 +330,14 @@ const styles = StyleSheet.create({
   },
   viewModeContainer: {
     paddingHorizontal: SPACING.md,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   viewModeButton: {
     flex: 1,
   },
   activityContainer: {
     paddingHorizontal: SPACING.md,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   sectionTitle: {
     fontSize: FONT_SIZE.lg,
@@ -360,14 +361,14 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     paddingHorizontal: SPACING.md,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   statCard: {
     flex: 1,
   },
   settingsContainer: {
     paddingHorizontal: SPACING.md,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   settingsCard: {
     overflow: 'hidden',

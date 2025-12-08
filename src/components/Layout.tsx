@@ -61,16 +61,12 @@ export const Screen: React.FC<ScreenProps> = ({
   style,
   backgroundColor = COLORS.white,
 }) => {
-  const insets = useSafeAreaInsets();
-
   return (
     <View
       style={[
         styles.screen,
         {
           backgroundColor,
-          paddingTop: insets.top,
-          paddingBottom: insets.bottom,
         },
         style,
       ]}

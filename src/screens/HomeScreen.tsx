@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, StatusBar, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { AppNavigationProp } from '../navigation/types';
@@ -20,6 +20,19 @@ import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../utils/theme';
 
 // Mock data for posts
 const MOCK_POSTS = [
+  {
+    id: '0',
+    user: {
+      name: 'NeuroLift',
+      avatar: null,
+    },
+    type: 'education',
+    title: 'Tip of the Day: Mind Control',
+    content: 'Your brain is neuroplastic - it can rewire itself throughout your entire life. Just 10 minutes of daily meditation can increase gray matter density in areas associated with learning, memory, and emotional regulation.\n\nTry our guided breathing exercise in BrainGym today!',
+    likes: 156,
+    comments: 28,
+    timestamp: 'NeuroLift Team',
+  },
   {
     id: '1',
     user: {
@@ -53,15 +66,15 @@ const MOCK_POSTS = [
   {
     id: '3',
     user: {
-      name: 'Emma Davis',
+      name: 'NeuroLift',
       avatar: null,
     },
     type: 'education',
-    title: 'Did you know?',
-    content: 'Research shows that practicing gratitude for just 5 minutes a day can increase happiness levels by 25% over 10 weeks.',
+    title: 'Daily Science: The Gratitude Effect',
+    content: 'Research shows that practicing gratitude for just 5 minutes a day can increase happiness levels by 25% over 10 weeks. This happens because gratitude activates the hypothalamus and increases dopamine production.\n\nSource: Journal of Positive Psychology, 2024',
     likes: 67,
     comments: 12,
-    timestamp: '6 hours ago',
+    timestamp: 'NeuroLift Team',
   },
   {
     id: '4',
@@ -106,16 +119,24 @@ export default function HomeScreen() {
         onPress={() => handlePostPress(post.id)}
         activeOpacity={0.9}
       >
-        <Card variant="flat" style={styles.postCard}>
+        <Card 
+          variant={post.type === 'education' ? 'elevated' : 'flat'} 
+          style={[
+            styles.postCard,
+            post.type === 'education' && styles.educationCard
+          ]}
+        >
           <CardContent>
-            {/* User Header */}
-            <Row gap={SPACING.sm} style={styles.postHeader}>
-              <Avatar name={post.user.name} size="md" />
-              <View style={styles.headerInfo}>
-                <Paragraph style={styles.userName}>{post.user.name}</Paragraph>
-                <Paragraph style={styles.timestamp}>{post.timestamp}</Paragraph>
-              </View>
-            </Row>
+            {/* User Header - Only show for non-education posts */}
+            {post.type !== 'education' && (
+              <Row gap={SPACING.sm} style={styles.postHeader}>
+                <Avatar name={post.user.name} size="md" />
+                <View style={styles.headerInfo}>
+                  <Paragraph style={styles.userName}>{post.user.name}</Paragraph>
+                  <Paragraph style={styles.timestamp}>{post.timestamp}</Paragraph>
+                </View>
+              </Row>
+            )}
 
             {/* Exercise Badge if applicable */}
             {post.type === 'exercise' && post.exercise && (
@@ -130,17 +151,28 @@ export default function HomeScreen() {
             {/* Education Title if applicable */}
             {post.type === 'education' && post.title && (
               <View style={styles.educationHeader}>
-                <Badge label="Education" variant="filled" />
+                <Row gap={SPACING.sm} style={styles.educationBadgeRow}>
+                  <View style={styles.officialBadge}>
+                    <Paragraph style={styles.officialIcon}>🧠</Paragraph>
+                  </View>
+                  <Badge label="NeuroLift Education" variant="filled" />
+                </Row>
                 <Spacer size={SPACING.sm} />
                 <Subtitle style={styles.educationTitle}>{post.title}</Subtitle>
               </View>
             )}
 
             {/* Post Content */}
-            <Paragraph style={styles.postContent}>{post.content}</Paragraph>
+            <Paragraph style={[
+              styles.postContent,
+              post.type === 'education' && styles.educationContent
+            ]}>{post.content}</Paragraph>
 
             {/* Engagement Stats */}
-            <View style={styles.engagementContainer}>
+            <View style={[
+              styles.engagementContainer,
+              post.type === 'education' && styles.educationEngagement
+            ]}>
               <Row gap={SPACING.lg}>
                 <TouchableOpacity style={styles.engagementButton}>
                   <Paragraph style={styles.engagementIcon}>♡</Paragraph>
@@ -164,12 +196,13 @@ export default function HomeScreen() {
 
   return (
     <Screen backgroundColor={COLORS.gray100}>
-      <SafeAreaView style={styles.container} edges={['top']}>
+      <SafeAreaView style={styles.container} edges={[]}>
         {/* Feed */}
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          contentInsetAdjustmentBehavior="never"
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -192,7 +225,6 @@ export default function HomeScreen() {
           {/* Posts */}
           {posts.map(renderPost)}
 
-          <Spacer size={SPACING.xxl} />
         </ScrollView>
       </SafeAreaView>
     </Screen>
@@ -236,11 +268,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    // No additional padding needed, SafeAreaView handles it
+    paddingTop: 0,
+    paddingBottom: 0,
   },
   welcomeCard: {
     marginHorizontal: SPACING.md,
-    marginBottom: SPACING.md,
+    marginTop: Platform.OS === 'ios' ? 44 : StatusBar.currentHeight || 0,
+    marginBottom: SPACING.sm,
   },
   welcomeText: {
     color: COLORS.gray600,
@@ -248,7 +282,13 @@ const styles = StyleSheet.create({
   },
   postCard: {
     marginHorizontal: SPACING.md,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
+  },
+  educationCard: {
+    backgroundColor: COLORS.gray50,
+    borderWidth: 1,
+    borderColor: COLORS.black,
+    marginBottom: SPACING.sm,
   },
   postHeader: {
     marginBottom: SPACING.md,
@@ -282,9 +322,33 @@ const styles = StyleSheet.create({
   educationHeader: {
     marginBottom: SPACING.md,
   },
+  educationBadgeRow: {
+    alignItems: 'center',
+  },
+  officialBadge: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: COLORS.black,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  officialIcon: {
+    fontSize: 12,
+    color: COLORS.white,
+  },
   educationTitle: {
-    fontSize: FONT_SIZE.md,
+    fontSize: FONT_SIZE.lg,
+    fontWeight: '700',
     color: COLORS.black,
+  },
+  educationContent: {
+    fontSize: FONT_SIZE.md,
+    lineHeight: 24,
+    fontWeight: '500',
+  },
+  educationEngagement: {
+    borderTopColor: COLORS.gray300,
   },
   postContent: {
     fontSize: FONT_SIZE.md,
