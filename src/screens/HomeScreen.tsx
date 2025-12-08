@@ -164,17 +164,7 @@ export default function HomeScreen() {
 
   return (
     <Screen backgroundColor={COLORS.gray100}>
-      <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Title style={styles.headerTitle}>NeuroLift</Title>
-          <TouchableOpacity style={styles.notificationButton}>
-            <View style={styles.notificationIcon}>
-              <Paragraph style={styles.notificationIconText}>🔔</Paragraph>
-            </View>
-          </TouchableOpacity>
-        </View>
-
+      <SafeAreaView style={styles.container} edges={['top']}>
         {/* Feed */}
         <ScrollView
           style={styles.scrollView}
@@ -246,7 +236,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingVertical: SPACING.md,
+    // No additional padding needed, SafeAreaView handles it
   },
   welcomeCard: {
     marginHorizontal: SPACING.md,

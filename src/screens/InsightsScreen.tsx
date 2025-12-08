@@ -64,12 +64,7 @@ export default function InsightsScreen() {
 
   return (
     <Screen backgroundColor={COLORS.gray100}>
-      <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Title style={styles.headerTitle}>Insights</Title>
-        </View>
-
+      <SafeAreaView style={styles.container} edges={['top']}>
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
@@ -242,7 +237,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingVertical: SPACING.md,
+    // No additional padding needed, SafeAreaView handles it
   },
   timeFilterContainer: {
     paddingHorizontal: SPACING.md,
