@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 import { COLORS } from '../utils/theme';
+import { useAuth } from '../context/AuthContext';
 
 // Import navigators
 import AuthNavigator from './AuthNavigator';
@@ -18,15 +20,15 @@ import SettingsScreen from '../screens/SettingsScreen';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
-  // TODO: Replace with actual auth state management
-  // Starting with false to show auth flow first
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated, isLoading } = useAuth();
 
-  // Export this function to allow screens to update auth state
-  React.useEffect(() => {
-    // @ts-ignore
-    global.setIsAuthenticated = setIsAuthenticated;
-  }, []);
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.white }}>
+        <ActivityIndicator size="large" color={COLORS.black} />
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>
